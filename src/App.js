@@ -817,40 +817,47 @@ export default function App() {
               <h2 style={{fontWeight:700,fontSize:18,margin:0}}>👥 Clientes <span style={{fontSize:13,fontWeight:400,color:"#9ca3af"}}>({clientes.length})</span></h2>
               <button onClick={()=>setModalCliente({})} style={{background:"#b91c1c",color:"white",border:"none",borderRadius:8,padding:"8px 16px",fontWeight:700,cursor:"pointer",fontSize:14}}>＋ Nuevo Cliente</button>
             </div>
-            <input value={busqCliente} onChange={e=>setBusqCliente(e.target.value)} placeholder="🔍 Buscar cliente..."
+            <input value={busqCliente} onChange={e=>setBusqCliente(e.target.value)} placeholder="🔍 Buscar por nombre, ciudad, NIT..."
               style={{border:"1px solid #e5e7eb",borderRadius:8,padding:"8px 12px",fontSize:13,background:"white",boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}/>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {clientes.filter(c=>!busqCliente||c.nombre.toLowerCase().includes(busqCliente.toLowerCase())).map(c=>{
-                const facs=facturas.filter(f=>f.cliente_id===c.id);
-                const total=facs.reduce((a,f)=>a+f.total,0);
-                const pagado=facs.reduce((a,f)=>a+f.total_pagado,0);
-                return (
-                  <div key={c.id} style={{background:"white",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,0.08)",padding:14}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                      <div style={{flex:1}}>
-                        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",marginBottom:4}}>
-                          <span style={{fontWeight:700,fontSize:14}}>{c.nombre}</span>
+            <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",background:"white",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,0.08)",overflow:"hidden"}}>
+                <thead>
+                  <tr style={{background:"#fff1f2"}}>
+                    {["Nombre","Tipo","NIT/CC","Email","Teléfono","Ciudad","Facturas","Total","Saldo","Acciones"].map(h=>(
+                      <th key={h} style={{padding:"10px 12px",fontSize:12,color:"#6b7280",fontWeight:600,textAlign:"left",whiteSpace:"nowrap"}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientes.filter(c=>!busqCliente||c.nombre.toLowerCase().includes(busqCliente.toLowerCase())||( c.ciudad||"").toLowerCase().includes(busqCliente.toLowerCase())||(c.nit_cedula||"").includes(busqCliente)).map(c=>{
+                    const facs=facturas.filter(f=>f.cliente_id===c.id);
+                    const total=facs.reduce((a,f)=>a+f.total,0);
+                    const pagado=facs.reduce((a,f)=>a+f.total_pagado,0);
+                    return (
+                      <tr key={c.id} style={{borderBottom:"1px solid #f3f4f6"}}>
+                        <td style={{padding:"8px 12px",fontWeight:700,fontSize:13,color:"#1f2937"}}>{c.nombre}</td>
+                        <td style={{padding:"8px 12px"}}>
                           <Badge label={c.tipo} bg={c.tipo==="Contrato"?"#dbeafe":c.tipo==="Corporativo"?"#f3e8ff":"#f3f4f6"} fg={c.tipo==="Contrato"?"#1e40af":c.tipo==="Corporativo"?"#6b21a8":"#374151"}/>
-                        </div>
-                        {c.email&&<div style={{fontSize:11,color:"#9ca3af"}}>📧 {c.email}</div>}
-                        {c.telefono&&<div style={{fontSize:11,color:"#9ca3af"}}>📱 {c.telefono}</div>}
-                        {c.ciudad&&<div style={{fontSize:11,color:"#9ca3af"}}>📍 {c.ciudad}</div>}
-                        {c.nit_cedula&&<div style={{fontSize:11,color:"#9ca3af"}}>🪪 {c.nit_cedula}</div>}
-                      </div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{fontSize:11,color:"#9ca3af"}}>{facs.length} facturas</div>
-                        <div style={{fontWeight:700,color:"#b91c1c",fontSize:14}}>{fmt(total)}</div>
-                        {total>pagado&&<div style={{fontSize:11,color:"#b91c1c"}}>Debe: {fmt(total-pagado)}</div>}
-                      </div>
-                    </div>
-                    <div style={{display:"flex",gap:6,marginTop:10,borderTop:"1px solid #f3f4f6",paddingTop:8}}>
-                      <button onClick={()=>setDetalleCliente(c)} style={{flex:1,background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"6px",fontSize:12,fontWeight:600,cursor:"pointer"}}>👁️ Ver historial</button>
-                      <button onClick={()=>setModalCliente(c)} style={{background:"#f3f4f6",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer"}}>✏️</button>
-                      <button onClick={()=>deleteCliente(c.id)} style={{background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer"}}>🗑️</button>
-                    </div>
-                  </div>
-                );
-              })}
+                        </td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{c.nit_cedula||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{c.email||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{c.telefono||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{c.ciudad||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,textAlign:"center"}}>{facs.length}</td>
+                        <td style={{padding:"8px 12px",fontWeight:700,fontSize:13,color:"#b91c1c"}}>{fmt(total)}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:total>pagado?"#b91c1c":"#16a34a",fontWeight:600}}>{total>pagado?fmt(total-pagado):"✅"}</td>
+                        <td style={{padding:"8px 12px"}}>
+                          <div style={{display:"flex",gap:4}}>
+                            <button onClick={()=>setDetalleCliente(c)} style={{fontSize:11,background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"4px 8px",cursor:"pointer",fontWeight:600}}>👁️</button>
+                            <button onClick={()=>setModalCliente(c)} style={{fontSize:11,background:"#f3f4f6",border:"none",borderRadius:6,padding:"4px 8px",cursor:"pointer"}}>✏️</button>
+                            <button onClick={()=>deleteCliente(c.id)} style={{fontSize:11,background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"4px 8px",cursor:"pointer"}}>🗑️</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -862,31 +869,45 @@ export default function App() {
               <h2 style={{fontWeight:700,fontSize:18,margin:0}}>🏢 Proveedores</h2>
               <button onClick={()=>setModalProveedor({})} style={{background:"#b91c1c",color:"white",border:"none",borderRadius:8,padding:"8px 16px",fontWeight:700,cursor:"pointer",fontSize:14}}>＋ Nuevo Proveedor</button>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {proveedores.map(p=>{
-                const ems=emisiones.filter(e=>e.proveedor_id===p.id);
-                const totalCosto=ems.reduce((a,e)=>a+(e.costo||0),0);
-                const ic=p.categoria==="Aerolínea"?"✈️":p.categoria==="Hotel"?"🏨":p.categoria==="Transportista"?"🚌":"🏢";
-                return (
-                  <div key={p.id} style={{background:"white",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,0.08)",padding:14}}>
-                    <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-                      <div style={{fontSize:32}}>{ic}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontWeight:700,fontSize:14}}>{p.nombre}</div>
-                        <Badge label={p.categoria} bg="#fff1f2" fg="#b91c1c"/>
-                        {p.contacto_principal&&<div style={{fontSize:11,color:"#9ca3af",marginTop:4}}>👤 {p.contacto_principal}</div>}
-                        {p.email&&<div style={{fontSize:11,color:"#9ca3af"}}>📧 {p.email}</div>}
-                        {p.telefono&&<div style={{fontSize:11,color:"#9ca3af"}}>📱 {p.telefono}</div>}
-                        <div style={{fontSize:11,color:"#6b7280",marginTop:4,fontWeight:600}}>{ems.length} emisiones · Costo total: {fmt(totalCosto)}</div>
-                      </div>
-                      <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                        <button onClick={()=>setModalProveedor(p)} style={{background:"#f3f4f6",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer"}}>✏️</button>
-                        <button onClick={()=>deleteProveedor(p.id)} style={{background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer"}}>🗑️</button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",background:"white",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,0.08)",overflow:"hidden"}}>
+                <thead>
+                  <tr style={{background:"#fff1f2"}}>
+                    {["Proveedor","Categoría","Contacto","Email","Teléfono","Emisiones","Costo Total","Acciones"].map(h=>(
+                      <th key={h} style={{padding:"10px 12px",fontSize:12,color:"#6b7280",fontWeight:600,textAlign:"left",whiteSpace:"nowrap"}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {proveedores.map(p=>{
+                    const ems=emisiones.filter(e=>e.proveedor_id===p.id);
+                    const totalCosto=ems.reduce((a,e)=>a+(e.costo||0),0);
+                    const ic=p.categoria==="Aerolínea"?"✈️":p.categoria==="Hotel"?"🏨":p.categoria==="Transportista"?"🚌":"🏢";
+                    return (
+                      <tr key={p.id} style={{borderBottom:"1px solid #f3f4f6"}}>
+                        <td style={{padding:"8px 12px"}}>
+                          <div style={{display:"flex",alignItems:"center",gap:8}}>
+                            <span style={{fontSize:20}}>{ic}</span>
+                            <span style={{fontWeight:700,fontSize:13}}>{p.nombre}</span>
+                          </div>
+                        </td>
+                        <td style={{padding:"8px 12px"}}><Badge label={p.categoria} bg="#fff1f2" fg="#b91c1c"/></td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{p.contacto_principal||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{p.email||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:12,color:"#6b7280"}}>{p.telefono||"—"}</td>
+                        <td style={{padding:"8px 12px",fontSize:13,fontWeight:600,textAlign:"center"}}>{ems.length}</td>
+                        <td style={{padding:"8px 12px",fontSize:13,fontWeight:700,color:"#b91c1c"}}>{fmt(totalCosto)}</td>
+                        <td style={{padding:"8px 12px"}}>
+                          <div style={{display:"flex",gap:4}}>
+                            <button onClick={()=>setModalProveedor(p)} style={{fontSize:11,background:"#f3f4f6",border:"none",borderRadius:6,padding:"4px 8px",cursor:"pointer"}}>✏️</button>
+                            <button onClick={()=>deleteProveedor(p.id)} style={{fontSize:11,background:"#fff1f2",color:"#b91c1c",border:"none",borderRadius:6,padding:"4px 8px",cursor:"pointer"}}>🗑️</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
