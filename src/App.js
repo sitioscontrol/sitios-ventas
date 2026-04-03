@@ -5,8 +5,10 @@ const SERVICES = ["Tiquete Nacional","Tiquete Internacional","Hospedaje","Silla"
 const CLIENT_PAY = ["Transferencia Bancolombia","Consignación Bancolombia","Datafono Bancolombia","Transferencia Banco Bogotá","Efectivo","Crédito"];
 const PROVIDER_PAY = ["Transferencia Bancolombia","Consignación Bancolombia","Datafono Bancolombia","Precompra CLIC","Efectivo","Crédito"];
 const STATUSES = ["Pendiente","Confirmado","Pagado","Cancelado"];
+// eslint-disable-next-line
 const SCOL = {Pendiente:"bg-yellow-100 text-yellow-800",Confirmado:"bg-blue-100 text-blue-800",Pagado:"bg-green-100 text-green-800",Cancelado:"bg-red-100 text-red-800"};
 const VENDORS = ["Mayelis Lopez","Francisco Guerra","Erick Moreno","Dany Muñoz","Aura Florez","Melissa Lopez"];
+// eslint-disable-next-line
 const PCATS = ["Aerolínea","Hotel","Transportista","Tour Operador","Aseguradora","Otro"];
 const PICONS = {"Transferencia Bancolombia":"🏦","Consignación Bancolombia":"🏦","Datafono Bancolombia":"💳","Transferencia Banco Bogotá":"🏦","Precompra CLIC":"💻","Efectivo":"💵","Crédito":"📋"};
 
